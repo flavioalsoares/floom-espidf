@@ -438,6 +438,7 @@ static void IRAM_ATTR R_DoDrawPlane(visplane_t *pl)
       int stop, light;
       draw_span_vars_t dsvars;
 
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
       dsvars.source = W_CacheLumpNum(firstflat + flattranslation[pl->picnum]);
 
       xoffs = pl->xoffs;  // killough 2/28/98: Add offsets

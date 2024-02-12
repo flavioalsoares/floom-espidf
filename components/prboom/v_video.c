@@ -164,6 +164,7 @@ static void FUNC_V_DrawBackground(const char* flatname, int scrn)
   int         lump;
 
   // killough 4/17/98:
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   src = W_CacheLumpNum(lump = firstflat + R_FlatNumForName(flatname));
 
   /* V_DrawBlock(0, 0, scrn, 64, 64, src, 0); */
@@ -254,7 +255,7 @@ void V_Init (void)
 // (indeed, laziness of the people who wrote the 'clones' of the original V_DrawPatch
 //  means that their inner loops weren't so well optimised, so merging code may even speed them).
 //
-static void IRAM_ATTR V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
+static inline void IRAM_ATTR V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
         int cm, enum patch_translation_e flags)
 {
   const byte *trans;
@@ -280,6 +281,7 @@ static void IRAM_ATTR V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *pat
     byte           *desttop = screens[scrn].data+y*screens[scrn].byte_pitch+x*V_GetPixelDepth();
     unsigned int    w = patch->width;
 
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
     if (y<0 || y+patch->height > ((flags & VPT_STRETCH) ? 200 :  SCREENHEIGHT)) {
       // killough 1/19/98: improved error message:
       lprintf(LO_WARN, "V_DrawMemPatch8: Patch (%d,%d)-(%d,%d) exceeds LFB in vertical direction (horizontal is clipped)\n"
@@ -358,6 +360,7 @@ static void IRAM_ATTR V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *pat
         }
       }
     }
+    lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   }
   else {
     // CPhipps - move stretched patch drawing code here
@@ -491,6 +494,7 @@ static void IRAM_ATTR V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *pat
 static void FUNC_V_DrawNumPatch(int x, int y, int scrn, int lump,
          int cm, enum patch_translation_e flags)
 {
+  //lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   V_DrawMemPatch(x, y, scrn, R_CachePatchNum(lump), cm, flags);
   R_UnlockPatchNum(lump);
 }
@@ -508,7 +512,7 @@ static int currentPaletteIndex = 0;
 //
 // V_UpdateTrueColorPalette
 //
-void V_UpdateTrueColorPalette(video_mode_t mode) {
+static void V_UpdateTrueColorPalette(video_mode_t mode) {
   int i, w, p;
   byte r,g,b;
   int nr,ng,nb;
@@ -517,6 +521,7 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
   static int usegammaOnLastPaletteGeneration = -1;
   
   int pplump = W_GetNumForName("PLAYPAL");
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   const byte *pal = W_CacheLumpNum(pplump);
   // opengl doesn't use the gamma
 //  const byte *const gtable = 

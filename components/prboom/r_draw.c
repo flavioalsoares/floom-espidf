@@ -1107,7 +1107,7 @@ void R_DrawViewBorder(void)
   }
 
   if ( viewheight >= ( SCREENHEIGHT - ST_SCALED_HEIGHT ))
-    return; // if high-res, don´t go any further!
+    return; // if high-res, donï¿½t go any further!
 
   top = ((SCREENHEIGHT-ST_SCALED_HEIGHT)-viewheight)/2;
   side = (SCREENWIDTH-scaledviewwidth)/2;

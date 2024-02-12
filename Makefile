@@ -6,5 +6,5 @@
 PROJECT_NAME := esp32-doom
 
 
-include $(IDF_PATH)/make/project.mk
+#include $(IDF_PATH)/make/project.mk
 

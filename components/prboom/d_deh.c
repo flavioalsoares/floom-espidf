@@ -1432,6 +1432,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
   else  // DEH file comes from lump indicated by third argument
     {
       infile.size = W_LumpLength(lumpnum);
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);      
       infile.inp = infile.lump = W_CacheLumpNum(lumpnum);
       filename = "(WAD)";
     }

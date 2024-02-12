@@ -171,10 +171,12 @@ static boolean P_CheckForZDoomNodes(int lumpnum, int gl_lumpnum)
 {
   const void *data;
 
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   data = W_CacheLumpNum(lumpnum + ML_NODES);
   if (*(const int *)data == ZNOD)
     I_Error("P_CheckForZDoomNodes: ZDoom nodes not supported yet");
 
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   data = W_CacheLumpNum(lumpnum + ML_SSECTORS);
   if (*(const int *)data == ZGLN)
     I_Error("P_CheckForZDoomNodes: ZDoom GL nodes not supported yet");
@@ -190,9 +192,11 @@ static void P_GetNodesVersion(int lumpnum, int gl_lumpnum)
 {
   const void *data;
 
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   data = W_CacheLumpNum(gl_lumpnum+ML_GL_VERTS);
   if ( (gl_lumpnum > lumpnum) && (forceOldBsp == false) && (compatibility_level >= prboom_2_compatibility) ) {
     if (*(const int *)data == gNd2) {
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
       data = W_CacheLumpNum(gl_lumpnum+ML_GL_SEGS);
       if (*(const int *)data == gNd3) {
         nodesVersion = gNd3;
@@ -240,6 +244,7 @@ static void P_LoadVertexes (int lump)
 
   // Load data into cache.
   // cph 2006/07/29 - cast to mapvertex_t here, making the loop below much neater
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   data = (const mapvertex_t *)W_CacheLumpNum(lump);
 
   // Copy and convert vertex coordinates,
@@ -275,6 +280,7 @@ static void P_LoadVertexes2(int lump, int gllump)
 
   if (gllump >= 0)  // check for glVertices
   {
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
     gldata = W_CacheLumpNum(gllump);
 
     if (nodesVersion == gNd2) // 32 bit GL_VERT format (16.16 fixed)
@@ -308,6 +314,7 @@ static void P_LoadVertexes2(int lump, int gllump)
     W_UnlockLumpNum(gllump);
   }
 
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   ml = (const mapvertex_t*) W_CacheLumpNum(lump);
 
   for (i=0; i < firstglvertex; i++)
@@ -367,6 +374,7 @@ static void P_LoadSegs (int lump)
 
   numsegs = W_LumpLength(lump) / sizeof(mapseg_t);
   segs = Z_Calloc(numsegs,sizeof(seg_t),PU_LEVEL,0);
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   data = (const mapseg_t *)W_CacheLumpNum(lump); // cph - wad lump handling updated
 
   if ((!data) || (!numsegs))
@@ -435,6 +443,7 @@ static void P_LoadGLSegs(int lump)
   numsegs = W_LumpLength(lump) / sizeof(glseg_t);
   segs = Z_Malloc(numsegs * sizeof(seg_t), PU_LEVEL, 0);
   memset(segs, 0, numsegs * sizeof(seg_t));
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   ml = (const glseg_t*)W_CacheLumpNum(lump);
 
   if ((!ml) || (!numsegs))
@@ -521,6 +530,7 @@ static void P_LoadSectors (int lump)
 
   numsectors = W_LumpLength (lump) / sizeof(mapsector_t);
   sectors = Z_Calloc (numsectors,sizeof(sector_t),PU_LEVEL,0);
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   data = W_CacheLumpNum (lump); // cph - wad lump handling updated
 
   for (i=0; i<numsectors; i++)
@@ -578,6 +588,7 @@ static void P_LoadNodes (int lump)
 
   numnodes = W_LumpLength (lump) / sizeof(mapnode_t);
   nodes = Z_Malloc (numnodes*sizeof(node_t),PU_LEVEL,0);
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   data = W_CacheLumpNum (lump); // cph - wad lump handling updated
 
   if ((!data) || (!numnodes))
@@ -625,6 +636,7 @@ static void P_LoadNodes (int lump)
 static void P_LoadThings (int lump)
 {
   int  i, numthings = W_LumpLength (lump) / sizeof(mapthing_t);
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   const mapthing_t *data = W_CacheLumpNum (lump);
 
   if ((!data) || (!numthings))
@@ -668,6 +680,7 @@ static void P_LoadLineDefs (int lump)
 
   numlines = W_LumpLength (lump) / sizeof(maplinedef_t);
   lines = Z_Calloc (numlines,sizeof(line_t),PU_LEVEL,0);
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   data = W_CacheLumpNum (lump); // cph - wad lump handling updated
 
   for (i=0; i<numlines; i++)
@@ -802,6 +815,7 @@ static void P_LoadSideDefs (int lump)
 
 static void P_LoadSideDefs2(int lump)
 {
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   const byte *data = W_CacheLumpNum(lump); // cph - const*, wad lump handling updated
   int  i;
 
@@ -1196,6 +1210,7 @@ static void P_LoadBlockMap (int lump)
     {
       long i;
       // cph - const*, wad lump handling updated
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
       const short *wadblockmaplump = W_CacheLumpNum(lump);
       blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
 
@@ -1248,6 +1263,7 @@ static void P_LoadReject(int lumpnum, int totallines)
   if (rejectlump != -1)
     W_UnlockLumpNum(rejectlump);
   rejectlump = lumpnum + ML_REJECT;
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   rejectmatrix = W_CacheLumpNum(rejectlump);
 
   required = (numsectors * numsectors + 7) / 8;

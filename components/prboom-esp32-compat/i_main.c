@@ -112,8 +112,9 @@ void I_Init(void)
 
   {
     /* killough 2/21/98: avoid sound initialization if no sound & no music */
-    if (!(nomusicparm && nosfxparm))
-      I_InitSound();
+    //Flavio desativou
+    //if (!(nomusicparm && nosfxparm))
+    //  I_InitSound();
   }
 
   R_InitInterpolation();

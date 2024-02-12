@@ -139,6 +139,7 @@ static int getPatchIsNotTileable(const patch_t *patch) {
   int cornerCount = 0;
   int hasAHole = 0;
 
+lprintf(LO_INFO,"%s: %d IN\n", __FUNCTION__, __LINE__);
   for (x=0; x<SHORT(patch->width); x++) {
     column = (const column_t *)((const byte *)patch + LONG(patch->columnofs[x]));
     if (!x) lastColumnDelta = column->topdelta;
@@ -152,12 +153,19 @@ static int getPatchIsNotTileable(const patch_t *patch) {
       else if (x == SHORT(patch->width)-1 && column->topdelta == 0) cornerCount++;
       else if (x == SHORT(patch->width)-1 && column->topdelta + column->length >= SHORT(patch->height)) cornerCount++;
 
+     if (cornerCount == 4)
+        return 0;
+
       if (numPosts++) hasAHole = 1;
       column = (const column_t *)((const byte *)column + column->length + 4);
+      lprintf(LO_INFO,"%2.2X ", cornerCount);
     }
   }
+  lprintf(LO_INFO,"\n");
 
-  if (cornerCount == 4) return 0;
+lprintf(LO_INFO,"%s: %d OUT\n", __FUNCTION__, __LINE__);
+  if (cornerCount == 4) 
+      return 0;
   return hasAHole;
 }
 
@@ -189,6 +197,7 @@ static int getColumnEdgeSlope(const column_t *prevcolumn, const column_t *nextco
 static void createPatch(int id) {
   rpatch_t *patch;
   const int patchNum = id;
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   const patch_t *oldPatch = (const patch_t*)W_CacheLumpNum(patchNum);
   const column_t *oldColumn, *oldPrevColumn, *oldNextColumn;
   int x, y;
@@ -202,6 +211,10 @@ static void createPatch(int id) {
   int numPostsUsedSoFar;
   int edgeSlope;
 
+  if (!id)
+      return;
+      
+lprintf(LO_INFO,"ID:%i numlumps:%i\n", id, numlumps);
 #ifdef RANGECHECK
   if (id >= numlumps)
     I_Error("createPatch: %i >= numlumps", id);
@@ -215,6 +228,7 @@ static void createPatch(int id) {
   patch->leftoffset = SHORT(oldPatch->leftoffset);
   patch->topoffset = SHORT(oldPatch->topoffset);
   patch->isNotTileable = getPatchIsNotTileable(oldPatch);
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
 
   // work out how much memory we need to allocate for this patch's data
   pixelDataSize = (patch->width * patch->height + 4) & ~3;
@@ -227,12 +241,19 @@ static void createPatch(int id) {
   for (x=0; x<patch->width; x++) {
     oldColumn = (const column_t *)((const byte *)oldPatch + LONG(oldPatch->columnofs[x]));
     numPostsInColumn[x] = 0;
+    lprintf(LO_INFO,"patch->width = %2.2X \n", patch->width);
     while (oldColumn->topdelta != 0xff) {
-      numPostsInColumn[x]++;
-      numPostsTotal++;
-      oldColumn = (const column_t *)((const byte *)oldColumn + oldColumn->length + 4);
+      lprintf(LO_INFO,"%2.2X ", numPostsInColumn[x]);
+      if (numPostsInColumn[x] < patch->width) {
+          numPostsInColumn[x]++;
+          numPostsTotal++;
+          oldColumn = (const column_t *)((const byte *)oldColumn + oldColumn->length + 4);
+      }
+      else
+        break;
     }
   }
+lprintf(LO_INFO,"%s: %d POS FOR\n", __FUNCTION__, __LINE__);
 
   postsDataSize = numPostsTotal * sizeof(rpost_t);
 
@@ -248,6 +269,7 @@ static void createPatch(int id) {
 
   // sanity check that we've got all the memory allocated we need
   assert((((byte*)patch->posts  + numPostsTotal*sizeof(rpost_t)) - (byte*)patch->data) == dataSize);
+lprintf(LO_INFO,"%s: %d POST SANITY CHECK\n", __FUNCTION__, __LINE__);
 
   memset(patch->pixels, 0xff, (patch->width*patch->height));
 
@@ -349,7 +371,9 @@ static void createPatch(int id) {
   }
 
   W_UnlockLumpNum(patchNum);
+  lprintf(LO_INFO,"%s: %d POST W_UnlockLumpNum\n", __FUNCTION__, __LINE__);
   free(numPostsInColumn);
+  lprintf(LO_INFO,"%s: %d Out...\n", __FUNCTION__, __LINE__);
 }
 
 typedef struct {
@@ -436,6 +460,7 @@ static void createTextureCompositePatch(int id) {
   for (i=0; i<texture->patchcount; i++) {
     texpatch = &texture->patches[i];
     patchNum = texpatch->patch;
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
     oldPatch = (const patch_t*)W_CacheLumpNum(patchNum);
 
     for (x=0; x<SHORT(oldPatch->width); x++) {
@@ -490,6 +515,7 @@ static void createTextureCompositePatch(int id) {
   for (i=0; i<texture->patchcount; i++) {
     texpatch = &texture->patches[i];
     patchNum = texpatch->patch;
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
     oldPatch = (const patch_t*)W_CacheLumpNum(patchNum);
 
     for (x=0; x<SHORT(oldPatch->width); x++) {

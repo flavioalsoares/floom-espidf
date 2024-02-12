@@ -139,6 +139,7 @@ static void R_InitTextures (void)
 
   // Load the patch names from pnames.lmp.
   name[8] = 0;
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   names = W_CacheLumpNum(names_lump = W_GetNumForName("PNAMES"));
   nummappatches = LONG(*((const int *)names));
   name_p = names+4;
@@ -171,6 +172,7 @@ static void R_InitTextures (void)
   // The data is contained in one or two lumps,
   //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
 
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   maptex = maptex1 = W_CacheLumpNum(maptex_lump[0] = W_GetNumForName("TEXTURE1"));
   numtextures1 = LONG(*maptex);
   maxoff = W_LumpLength(maptex_lump[0]);
@@ -178,6 +180,7 @@ static void R_InitTextures (void)
 
   if (W_CheckNumForName("TEXTURE2") != -1)
     {
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
       maptex2 = W_CacheLumpNum(maptex_lump[1] = W_GetNumForName("TEXTURE2"));
       numtextures2 = LONG(*maptex2);
       maxoff2 = W_LumpLength(maptex_lump[1]);
@@ -380,6 +383,7 @@ static void R_InitColormaps(void)
   numcolormaps = lastcolormaplump - firstcolormaplump;
   colormaps = Z_Malloc(sizeof(*colormaps) * numcolormaps, PU_STATIC, 0);
   colormaps[0] = (const lighttable_t *)W_CacheLumpName("COLORMAP");
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   for (i=1; i<numcolormaps; i++)
     colormaps[i] = (const lighttable_t *)W_CacheLumpNum(i+firstcolormaplump);
   // cph - always lock
@@ -412,13 +416,14 @@ const lighttable_t* R_ColourMap(int lightlevel, fixed_t spryscale)
 {
   if (fixedcolormap) return fixedcolormap;
   else {
-    if (curline)
+    if (curline) {
       if (curline->v1->y == curline->v2->y)
         lightlevel -= 1 << LIGHTSEGSHIFT;
       else
         if (curline->v1->x == curline->v2->x)
           lightlevel += 1 << LIGHTSEGSHIFT;
-
+    }
+    
     lightlevel += extralight << LIGHTSEGSHIFT;
 
     /* cph 2001/11/17 -
@@ -457,6 +462,7 @@ void R_InitTranMap(int progress)
   lprintf(LO_INFO, "R_InitTranMap: TRANMAP lump: %d\n", lump);
   // If a tranlucency filter map lump is present, use it
 
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   if (lump != -1)  // Set a pointer to the translucency filter maps.
     main_tranmap = W_CacheLumpNum(lump);   // killough 4/11/98
   else if (W_CheckNumForName("PLAYPAL")!=-1) // can be called before WAD loaded
@@ -657,6 +663,7 @@ int PUREFUNC R_SafeTextureNumForName(const char *name, int snum)
 
 static inline void precache_lump(int l)
 {
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   W_CacheLumpNum(l); W_UnlockLumpNum(l);
 }
 

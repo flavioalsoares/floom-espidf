@@ -381,6 +381,7 @@ static void R_DrawVisSprite(vissprite_t *vis, int x1, int x2)
 {
   int      texturecolumn;
   fixed_t  frac;
+  lprintf(LO_INFO,"%s: %d CALL R_CachePatchNum \n", __FUNCTION__, __LINE__);
   const rpatch_t *patch = R_CachePatchNum(vis->patch+firstspritelump);
   R_DrawColumn_f colfunc;
   draw_column_vars_t dcvars;
@@ -545,6 +546,8 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
     }
 
   {
+      lprintf(LO_INFO,"%s: %d CALL R_CachePatchNum \n", __FUNCTION__, __LINE__);
+
     const rpatch_t* patch = R_CachePatchNum(lump+firstspritelump);
 
     /* calculate edges of the shape
@@ -721,6 +724,7 @@ static void R_DrawPSprite (pspdef_t *psp, int lightlevel)
   flip = (boolean) sprframe->flip[0];
 
   {
+    lprintf(LO_INFO,"%s: %d CALL R_CachePatchNum \n", __FUNCTION__, __LINE__);
     const rpatch_t* patch = R_CachePatchNum(lump+firstspritelump);
     // calculate edges of the shape
     fixed_t       tx;
@@ -783,6 +787,7 @@ static void R_DrawPSprite (pspdef_t *psp, int lightlevel)
   // proff 11/99: don't use software stuff in OpenGL
   if (V_GetMode() != VID_MODEGL)
   {
+    lprintf(LO_INFO,"CHAMA R_DrawVisSprite EM %s: %d\n", __FUNCTION__, __LINE__);
     R_DrawVisSprite(vis, vis->x1, vis->x2);
   }
 #ifdef GL_DOOM
@@ -1039,6 +1044,7 @@ static void R_DrawSprite (vissprite_t* spr)
 
   mfloorclip = clipbot;
   mceilingclip = cliptop;
+  lprintf(LO_INFO,"CHAMA R_DrawVisSprite EM %s: %d\n", __FUNCTION__, __LINE__);
   R_DrawVisSprite (spr, spr->x1, spr->x2);
 }
 

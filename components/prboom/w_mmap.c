@@ -137,6 +137,7 @@ const void* W_CacheLumpNum(int lump)
 const void* W_LockLumpNum(int lump)
 {
   size_t len = W_LumpLength(lump);
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   const void *data = W_CacheLumpNum(lump);
 
   if (!cachelump[lump].cache) {

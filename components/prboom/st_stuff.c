@@ -48,6 +48,7 @@
 #include "dstrings.h"
 #include "r_draw.h"
 
+#include "lprintf.h"
 //
 // STATUS BAR DATA
 //
@@ -392,19 +393,24 @@ static void ST_refreshBackground(void)
       // proff 05/17/2000: draw to the frontbuffer in OpenGL
       if (V_GetMode() == VID_MODEGL)
         y=ST_Y;
+      lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
       V_DrawNumPatch(ST_X, y, BG, stbarbg.lumpnum, CR_DEFAULT, VPT_STRETCH);
-      if (st_armson)
+      if (st_armson) {
+        lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
         V_DrawNumPatch(ST_ARMSBGX, y, BG, armsbg.lumpnum, CR_DEFAULT, VPT_STRETCH);
-
+      }
       // killough 3/7/98: make face background change with displayplayer
       if (netgame)
       {
+        lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
         V_DrawNumPatch(ST_FX, y, BG, faceback.lumpnum,
            displayplayer ? CR_LIMIT+displayplayer : CR_DEFAULT,
            displayplayer ? (VPT_TRANS | VPT_STRETCH) : VPT_STRETCH);
       }
+      lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
       V_CopyRect(ST_X, y, BG, ST_SCALED_WIDTH, ST_SCALED_HEIGHT, ST_X, ST_SCALED_Y, FG, VPT_NONE);
     }
+    lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
 }
 
 

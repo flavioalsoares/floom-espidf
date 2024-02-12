@@ -1397,6 +1397,7 @@ static uint_64_t G_UpdateSignature(uint_64_t s, const char *name)
     do
       {
   int size = W_LumpLength(i);
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);  
   const byte *p = W_CacheLumpNum(i);
   while (size--)
     s <<= 1, s += *p++;
@@ -2838,6 +2839,7 @@ void G_DoPlayDemo(void)
 
   /* cph - store lump number for unlocking later */
   demolumpnum = W_GetNumForName(basename);
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   demobuffer = W_CacheLumpNum(demolumpnum);
   demolength = W_LumpLength(demolumpnum);
 

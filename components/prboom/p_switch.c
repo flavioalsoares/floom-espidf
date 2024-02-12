@@ -76,6 +76,7 @@ void P_InitSwitchList(void)
   int lump = W_GetNumForName("SWITCHES"); // cph - new wad lump handling
 
   //jff 3/23/98 read the switch table from a predefined lump
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   alphSwitchList = (const switchlist_t *)W_CacheLumpNum(lump);
 
   for (i=0;;i++)

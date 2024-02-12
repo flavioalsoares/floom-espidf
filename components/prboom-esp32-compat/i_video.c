@@ -99,7 +99,8 @@ void I_StartFrame (void)
 
 int I_StartDisplay(void)
 {
-	spi_lcd_wait_finish();
+        //Flavio desativou
+	//spi_lcd_wait_finish();
   return true;
 }
 
@@ -131,7 +132,8 @@ void I_FinishUpdate (void)
 	}
 #endif
 #if 1
-	spi_lcd_send(scr);
+        //Flavio desativou
+	//spi_lcd_send(scr);
 #endif
 	//Flip framebuffers
 //	if (scr==screena) screens[0].data=screenb; else screens[0].data=screena;
@@ -143,6 +145,7 @@ void I_SetPalette (int pal)
 {
 	int i, r, g, b, v;
 	int pplump = W_GetNumForName("PLAYPAL");
+lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
 	const byte * palette = W_CacheLumpNum(pplump);
 	palette+=pal*(3*256);
 	for (i=0; i<255 ; i++) {

@@ -136,7 +136,7 @@ const char *const standard_iwads[]=
   "doomu.wad", /* CPhipps - alow doomu.wad */
   "freedoom.wad", /* wart@kobold.org:  added freedoom for Fedora Extras */
 };
-static const int nstandard_iwads = sizeof standard_iwads/sizeof*standard_iwads;
+//static const int nstandard_iwads = sizeof standard_iwads/sizeof*standard_iwads;
 
 /*
  * D_PostEvent - Event handling
@@ -340,6 +340,7 @@ static void D_DoomLoop(void)
 {
   for (;;)
     {
+        //lprintf(LO_INFO,"D_DoomLoop: START LOOP.\n");
       WasRenderedInTryRunTics = false;
       // frame syncronous IO operations
       I_StartFrame ();
@@ -364,7 +365,7 @@ static void D_DoomLoop(void)
 
       // killough 3/16/98: change consoleplayer to displayplayer
       if (players[displayplayer].mo) // cph 2002/08/10
-	S_UpdateSounds(players[displayplayer].mo);// move positional sounds
+	        S_UpdateSounds(players[displayplayer].mo);// move positional sounds
 
       if (V_GetMode() == VID_MODEGL ? 
         !movement_smooth || !WasRenderedInTryRunTics :
@@ -380,6 +381,7 @@ static void D_DoomLoop(void)
   auto_shot_count = auto_shot_time;
   M_DoScreenShot(auto_shot_fname);
       }
+      //lprintf(LO_INFO,"D_DoomLoop: END LOOP.\n");
     }
 }
 
@@ -1572,17 +1574,19 @@ static void D_DoomMainSetup(void)
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"S_Init: Setting up sound.\n");
   S_Init(snd_SfxVolume /* *8 */, snd_MusicVolume /* *8*/ );
-
+  
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"HU_Init: Setting up heads up display.\n");
-  HU_Init();
+  //Flavio desativou
+  //lprintf(LO_INFO,"HU_Init: Setting up heads up display.\n");
+  //HU_Init();
 
   if (!(M_CheckParm("-nodraw") && M_CheckParm("-nosound")))
     I_InitGraphics();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"ST_Init: Init status bar.\n");
-  ST_Init();
+  //Flavio desativou
+  //lprintf(LO_INFO,"ST_Init: Init status bar.\n");
+  //ST_Init();
 
   idmusnum = -1; //jff 3/17/98 insure idmus number is blank
 

@@ -1,0 +1,21 @@
+{
+        "idf.adapterTargetName": "esp32s3",
+        "files.associations": {
+                "task.h": "c",
+                "queue.h": "c",
+                "doomtype.h": "c",
+                "i2s.h": "c",
+                "semphr.h": "c",
+                "m_random.h": "c",
+                "i_video.h": "c",
+                "r_drawflush.inl": "c",
+                "*.c_orig": "c",
+                "type_traits": "c",
+                "*.inc": "c",
+                "esp_debug_helpers.h": "c",
+                "cstdlib": "c",
+                "memory": "c"
+        },
+        "idf.port": "/dev/ttyUSB0",
+        "idf.flashType": "UART"
+}

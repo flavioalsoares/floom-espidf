@@ -49,7 +49,7 @@ void doomEngineTask(void *pvParameters)
 
 void app_main()
 {
-	spi_lcd_init();
-	jsInit();
+	//spi_lcd_init();
+	//jsInit();
 	xTaskCreatePinnedToCore(&doomEngineTask, "doomEngine", 18000, NULL, 5, NULL, 0);
 }

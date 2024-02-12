@@ -46,7 +46,7 @@ static angle_t smooth_playing_angle;
 
 void R_SmoothPlaying_Reset(player_t *player)
 {
-  if (demo_smoothturns && demoplayback && players!=NULL)
+  if (demo_smoothturns && demoplayback /*&& players!=NULL*/)
   {
     if (player!=NULL)
       player = &players[displayplayer];

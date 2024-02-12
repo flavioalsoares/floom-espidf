@@ -97,10 +97,25 @@
 #include <sys/time.h>
 
 #define MODE_SPI 1
+#if 0
 #define PIN_NUM_MISO 2 //4
 #define PIN_NUM_MOSI 13
 #define PIN_NUM_CLK  14
 #define PIN_NUM_CS   15
+
+#define PIN_NUM_MISO 19
+#define PIN_NUM_MOSI 23
+#define PIN_NUM_CLK  18
+#define PIN_NUM_CS   5
+#endif
+#define PIN_NUM_MISO 13
+#define PIN_NUM_MOSI 11
+#define PIN_NUM_CLK  12
+#define PIN_NUM_CS   10
+
+static const char *TAG = "floom";
+
+#define MOUNT_POINT "/sdcard"
 
 /*
 SDMMC pin configuration
@@ -194,43 +209,64 @@ static bool init_SD = false;
 
 void Init_SD()
 {
-#if MODE_SPI == 1	
-	sdmmc_host_t host = SDSPI_HOST_DEFAULT();
-	//host.command_timeout_ms=200;
-	//host.max_freq_khz = SDMMC_FREQ_PROBING;
-    sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
-    slot_config.gpio_miso = PIN_NUM_MISO;
-    slot_config.gpio_mosi = PIN_NUM_MOSI;
-    slot_config.gpio_sck  = PIN_NUM_CLK;
-    slot_config.gpio_cs   = PIN_NUM_CS;
-	slot_config.dma_channel = 1; //2
-#else
-	sdmmc_host_t host = SDMMC_HOST_DEFAULT();
-	host.flags = SDMMC_HOST_FLAG_1BIT;
-	//host.max_freq_khz = SDMMC_FREQ_HIGHSPEED;
-	host.command_timeout_ms=500;
-	sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
-	slot_config.width = 1;
-#endif
+    esp_err_t ret;
+    // Options for mounting the filesystem.
+    // If format_if_mount_failed is set to true, SD card will be partitioned and
+    // formatted in case when mounting fails.
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+#ifdef CONFIG_EXAMPLE_FORMAT_IF_MOUNT_FAILED
+        .format_if_mount_failed = true,
+#else
         .format_if_mount_failed = false,
-        .max_files = 2
+#endif // EXAMPLE_FORMAT_IF_MOUNT_FAILED
+        .max_files = 5,
+        .allocation_unit_size = 16 * 1024
     };
+    sdmmc_card_t *card;
+    const char mount_point[] = MOUNT_POINT;
+    ESP_LOGI(TAG, "Initializing SD card");
 
-	sdmmc_card_t* card;
-    esp_err_t ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);
+    // Use settings defined above to initialize SD card and mount FAT filesystem.
+    // Note: esp_vfs_fat_sdmmc/sdspi_mount is all-in-one convenience functions.
+    // Please check its source code and implement error recovery when developing
+    // production applications.
+    ESP_LOGI(TAG, "Using SPI peripheral");
+
+    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+    spi_bus_config_t bus_cfg = {
+        .mosi_io_num = PIN_NUM_MOSI,
+        .miso_io_num = PIN_NUM_MISO,
+        .sclk_io_num = PIN_NUM_CLK,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .max_transfer_sz = 4000,
+    };
+    ret = spi_bus_initialize(host.slot, &bus_cfg, SDSPI_DEFAULT_DMA);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize bus.");
+        return;
+    }
+
+    // This initializes the slot without card detect (CD) and write protect (WP) signals.
+    // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
+    sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
+    slot_config.gpio_cs = PIN_NUM_CS;
+    slot_config.host_id = host.slot;
+
+    ESP_LOGI(TAG, "Mounting filesystem");
+    ret = esp_vfs_fat_sdspi_mount(mount_point, &host, &slot_config, &mount_config, &card);
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
-            lprintf(LO_INFO, "Init_SD: Failed to mount filesystem.\n");
+            ESP_LOGE(TAG, "Failed to mount filesystem. ");
         } else {
-           lprintf(LO_INFO, "Init_SD: Failed to initialize the card. %d\n", ret);
+            ESP_LOGE(TAG, "Failed to initialize the card (%s). ", esp_err_to_name(ret));
         }
         return;
     }
-	lprintf(LO_INFO, "Init_SD: SD card opened.\n");
-	//sdmmc_card_print_info(stdout, card);
-	init_SD = true;
+    ESP_LOGI(TAG, "Filesystem mounted");
+
+    init_SD = true;
 }
 
 typedef struct {
@@ -334,6 +370,7 @@ typedef struct {
 } MmapHandle;
 
 #define NO_MMAP_HANDLES 128
+
 static MmapHandle mmapHandle[NO_MMAP_HANDLES];
 
 static int nextHandle=0;
@@ -395,6 +432,7 @@ void *I_Mmap(void *addr, size_t length, int prot, int flags, int ifd, off_t offs
 
 	i=getFreeHandle();
 
+    lprintf(LO_INFO,"I_Mmap: FreeHandle=%i\n", i);
 	retaddr = malloc(length);
 	if(!retaddr)
 	{
@@ -417,21 +455,35 @@ void *I_Mmap(void *addr, size_t length, int prot, int flags, int ifd, off_t offs
 		return NULL;
 	}
 
+	lprintf(LO_INFO,"I_Mmap: OK\t %ld bytes\n", length);
 	return retaddr;
 }
 
 
 int I_Munmap(void *addr, size_t length) {
+	lprintf(LO_INFO,"IN %s: %d\n", __FUNCTION__, __LINE__);
 	int i;
 	for (i=0; i<NO_MMAP_HANDLES; i++) {
-		if (mmapHandle[i].addr==addr && mmapHandle[i].len==length/* && mmapHandle[i].ifd==ifd*/) break;
+		if (mmapHandle[i].addr==addr && mmapHandle[i].len==length/* && mmapHandle[i].ifd==ifd*/) {
+                    mmapHandle[i].len=0;
+                    mmapHandle[i].used=0;
+                    mmapHandle[i].offset=0;
+                    mmapHandle[i].ifd=0;
+                    free(mmapHandle[i].addr);
+                    mmapHandle[i].addr=NULL;
+                    lprintf(LO_ERROR, "I_Munmap: Free mapped region: %i\n", i);
+                    break;
+                }
 	}
+	
 	if (i==NO_MMAP_HANDLES) {
-		lprintf(LO_ERROR, "I_Mmap: Freeing non-mmapped address/len combo!\n");
+		lprintf(LO_ERROR, "I_Munmap: Freeing non-mmapped address/len combo!\n");
 		exit(0);
 	}
-//	lprintf(LO_INFO, "I_Mmap: freeing handle %d\n", i);
-	mmapHandle[i].used--;
+
+	if (mmapHandle[i].used)
+		mmapHandle[i].used--;
+		
 	return 0;
 }
 
