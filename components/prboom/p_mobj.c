@@ -1182,7 +1182,6 @@ void P_SpawnMapThing (const mapthing_t* mthing)
   // indicates it's a Doom wad made by a Doom editor which puts 1's in
   // bits that weren't used in Doom (such as HellMaker wads). So we should
   // then simply ignore all upper bits.
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
 
   if (demo_compatibility ||
       (compatibility_level >= lxdoom_1_compatibility  &&
@@ -1192,7 +1191,6 @@ void P_SpawnMapThing (const mapthing_t* mthing)
         options, mthing->type);
     options &= MTF_EASY|MTF_NORMAL|MTF_HARD|MTF_AMBUSH|MTF_NOTSINGLE;
   }
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   // count deathmatch start positions
 
   // doom2.exe has at most 10 deathmatch starts
@@ -1214,7 +1212,6 @@ void P_SpawnMapThing (const mapthing_t* mthing)
                    sizeof(*deathmatchstarts));
       deathmatch_p = deathmatchstarts + offset;
       }
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);      
     memcpy(deathmatch_p++, mthing, sizeof(*mthing));
     (deathmatch_p-1)->options = 1;
     return;
@@ -1254,7 +1251,6 @@ void P_SpawnMapThing (const mapthing_t* mthing)
   }
 #endif
 
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);      
     // save spots for respawning in coop games
     playerstarts[mthing->type-1] = *mthing;
     /* cph 2006/07/24 - use the otherwise-unused options field to flag that
@@ -1263,10 +1259,8 @@ void P_SpawnMapThing (const mapthing_t* mthing)
      * the playerstarts version with this field set */
     playerstarts[mthing->type-1].options = 1;
 
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);      
     if (!deathmatch)
       P_SpawnPlayer (mthing->type-1, &playerstarts[mthing->type-1]);
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);            
     return;
     }
 
@@ -1295,7 +1289,6 @@ void P_SpawnMapThing (const mapthing_t* mthing)
 
   // find which type to spawn
 
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);      
   // killough 8/23/98: use table for faster lookup
   i = P_FindDoomedNum(mthing->type);
 
@@ -1303,7 +1296,6 @@ void P_SpawnMapThing (const mapthing_t* mthing)
   // Do not abort because of an unknown thing. Ignore it, but post a
   // warning message for the player.
 
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);      
   if (i == NUMMOBJTYPES)
     {
     doom_printf("Unknown Thing type %i at (%i, %i)",mthing->type,mthing->x,mthing->y);
@@ -1333,11 +1325,9 @@ spawnit:
   else
     z = ONFLOORZ;
 
-//lprintf(LO_INFO,"%s: %d P_SpawnMobj (%d,%d,%d, %d)\n", __FUNCTION__, __LINE__, x,y,z, i);      
   mobj = P_SpawnMobj (x,y,z, i);
   mobj->spawnpoint = *mthing;
 
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);      
   if (mobj->tics > 0)
     mobj->tics = 1 + (P_Random (pr_spawnthing) % mobj->tics);
 
@@ -1345,12 +1335,10 @@ spawnit:
       options & MTF_FRIEND &&
       mbf_features)
     {
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);      
       mobj->flags |= MF_FRIEND;            // killough 10/98:
       P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
     }
 
-//lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);      
   /* killough 7/20/98: exclude friends */
   if (!((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
     totalkills++;

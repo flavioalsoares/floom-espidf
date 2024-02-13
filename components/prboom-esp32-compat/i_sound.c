@@ -154,7 +154,6 @@ void* getsfx(char* sfxname, int* len)
     //	     sfxname, sfxlump, size );
     //fflush( stderr );
     
-lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
     sfx = (unsigned char*)W_CacheLumpNum( sfxlump );
 
     // Pads the sound effect out to the mixing buffer size.

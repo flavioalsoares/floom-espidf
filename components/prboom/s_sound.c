@@ -509,7 +509,6 @@ void S_ChangeMusic(int musicnum, int looping)
       //cournia - could not load music file, play default MIDI music
 
       // load & register it
-lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
       music->data = W_CacheLumpNum(music->lumpnum);
       music->handle = I_RegisterSong(music->data, W_LumpLength(music->lumpnum));
     }

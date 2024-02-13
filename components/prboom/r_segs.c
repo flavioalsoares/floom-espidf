@@ -141,7 +141,6 @@ void IRAM_ATTR R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
     {
       colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, drawvars.filterwall, drawvars.filterz);
       tranmap = main_tranmap;
-lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
       if (curline->linedef->tranlump > 0)
         tranmap = W_CacheLumpNum(curline->linedef->tranlump-1);
     }

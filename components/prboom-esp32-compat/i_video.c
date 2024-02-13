@@ -145,7 +145,6 @@ void I_SetPalette (int pal)
 {
 	int i, r, g, b, v;
 	int pplump = W_GetNumForName("PLAYPAL");
-lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
 	const byte * palette = W_CacheLumpNum(pplump);
 	palette+=pal*(3*256);
 	for (i=0; i<255 ; i++) {

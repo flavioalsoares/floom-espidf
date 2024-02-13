@@ -144,7 +144,6 @@ void P_InitPicAnims (void)
   //  Init animation
 
   //jff 3/23/98 read from predefined or wad lump instead of table
-lprintf(LO_INFO,"%s: %d\n", __FUNCTION__, __LINE__);
   animdefs = (const animdef_t *)W_CacheLumpNum(lump);
 
   lastanim = anims;

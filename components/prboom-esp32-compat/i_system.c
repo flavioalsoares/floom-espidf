@@ -402,7 +402,6 @@ static int getFreeHandle() {
 }
 
 void freeUnusedMmaps(void) {
-	lprintf(LO_INFO, "freeUnusedMmaps...\n");
 	for (int i=0; i<NO_MMAP_HANDLES; i++) {
 		//Check if handle is not in use but is mapped.
 		if (mmapHandle[i].used==0 && mmapHandle[i].addr!=NULL) {
@@ -432,7 +431,6 @@ void *I_Mmap(void *addr, size_t length, int prot, int flags, int ifd, off_t offs
 
 	i=getFreeHandle();
 
-    lprintf(LO_INFO,"I_Mmap: FreeHandle=%i\n", i);
 	retaddr = malloc(length);
 	if(!retaddr)
 	{
@@ -455,13 +453,11 @@ void *I_Mmap(void *addr, size_t length, int prot, int flags, int ifd, off_t offs
 		return NULL;
 	}
 
-	lprintf(LO_INFO,"I_Mmap: OK\t %ld bytes\n", length);
 	return retaddr;
 }
 
 
 int I_Munmap(void *addr, size_t length) {
-	lprintf(LO_INFO,"IN %s: %d\n", __FUNCTION__, __LINE__);
 	int i;
 	for (i=0; i<NO_MMAP_HANDLES; i++) {
 		if (mmapHandle[i].addr==addr && mmapHandle[i].len==length/* && mmapHandle[i].ifd==ifd*/) {
@@ -471,7 +467,6 @@ int I_Munmap(void *addr, size_t length) {
                     mmapHandle[i].ifd=0;
                     free(mmapHandle[i].addr);
                     mmapHandle[i].addr=NULL;
-                    lprintf(LO_ERROR, "I_Munmap: Free mapped region: %i\n", i);
                     break;
                 }
 	}
