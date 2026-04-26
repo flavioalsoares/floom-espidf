@@ -1576,17 +1576,15 @@ static void D_DoomMainSetup(void)
   S_Init(snd_SfxVolume /* *8 */, snd_MusicVolume /* *8*/ );
   
   //jff 9/3/98 use logical output routine
-  //Flavio desativou
-  //lprintf(LO_INFO,"HU_Init: Setting up heads up display.\n");
-  //HU_Init();
+  lprintf(LO_INFO,"HU_Init: Setting up heads up display.\n");
+  HU_Init();
 
   if (!(M_CheckParm("-nodraw") && M_CheckParm("-nosound")))
     I_InitGraphics();
 
   //jff 9/3/98 use logical output routine
-  //Flavio desativou
-  //lprintf(LO_INFO,"ST_Init: Init status bar.\n");
-  //ST_Init();
+  lprintf(LO_INFO,"ST_Init: Init status bar.\n");
+  ST_Init();
 
   idmusnum = -1; //jff 3/17/98 insure idmus number is blank
 
