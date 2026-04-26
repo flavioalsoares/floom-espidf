@@ -93,6 +93,9 @@ void I_UpdateNoBlit (void)
 
 void I_StartFrame (void)
 {
+	/* wait for the previous frame's async blit before the renderer starts
+	 * touching screens[0] again */
+	rgb_lcd_blit_wait();
 }
 
 
@@ -116,47 +119,17 @@ uint16_t lcdpal[256];
 //
 
 /*
- * Blit Doom's 320x240 8bpp indexed framebuffer to the 800x480 RGB565
- * display with 2x nearest-neighbour scaling, centred horizontally.
- * Strategy: build each upscaled line in a fast SRAM buffer, then
- * flush to PSRAM with two sequential memcpy calls — much faster than
- * scattered per-pixel writes into PSRAM.
+ * Hand the just-rendered 320x240 8bpp frame + palette to the display task.
+ * The actual palette-lookup + 2x scale + write to the 800x480 RGB framebuffer
+ * runs on core 0 in parallel with Doom's next TryRunTics on core 1.
+ * I_StartFrame() waits for the previous frame to finish before the renderer
+ * starts touching screens[0] again.
  */
-#define DOOM_W   320
-#define DOOM_H   240
-#define LCD_W    800
-#define LCD_H    480
-#define X_OFF    ((LCD_W - DOOM_W * 2) / 2)   /* 80 */
-
-/*
- * 640-pixel line buffer in DRAM (IRAM-safe, fast).
- * Written as uint32_t pairs (2 pixels per store) to halve store count.
- */
-static DRAM_ATTR uint32_t s_linebuf[DOOM_W];   /* 320 x uint32_t = 640 pixels */
-
-void IRAM_ATTR I_FinishUpdate(void)
+void I_FinishUpdate(void)
 {
-	uint16_t *fb = rgb_lcd_get_frame_buffer();
-	if (!fb) return;
-
 	const uint8_t *src = (const uint8_t *)screens[0].data;
 	if (!src) return;
-
-	for (int y = 0; y < DOOM_H; y++) {
-		const uint8_t *srow = src + y * DOOM_W;
-
-		/* palette lookup + 2x horiz: one uint32_t write per source pixel */
-		for (int x = 0; x < DOOM_W; x++) {
-			uint32_t c = lcdpal[srow[x]];
-			s_linebuf[x] = (c << 16) | c;
-		}
-
-		/* two sequential memcpy to PSRAM (burst-friendly) */
-		uint16_t *row0 = fb + (y * 2 + 0) * LCD_W + X_OFF;
-		uint16_t *row1 = fb + (y * 2 + 1) * LCD_W + X_OFF;
-		memcpy(row0, s_linebuf, DOOM_W * 2 * sizeof(uint16_t));
-		memcpy(row1, s_linebuf, DOOM_W * 2 * sizeof(uint16_t));
-	}
+	rgb_lcd_blit_kick(src, lcdpal);
 }
 
 void I_SetPalette (int pal)
