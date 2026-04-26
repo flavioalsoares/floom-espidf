@@ -1,0 +1,30 @@
+# ESP-IDF build output
+build/
+managed_components/
+dependencies.lock
+
+# sdkconfig backups (keep sdkconfig itself — it's the project config)
+sdkconfig.old
+sdkconfig.ci
+sdkconfig.defaults.*.bak
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Compiled binaries / objects (anywhere)
+*.o
+*.obj
+*.a
+*.elf
+*.bin
+*.map
+*.hex
+
+# Python cache
+__pycache__/
+*.pyc
