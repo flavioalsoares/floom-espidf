@@ -904,8 +904,10 @@ int V_GetPixelDepth(void) {
 //
 void V_AllocScreen(screeninfo_t *scrn) {
   if (!scrn->not_on_heap)
-    if ((scrn->byte_pitch * scrn->height) > 0)
+    if ((scrn->byte_pitch * scrn->height) > 0) {
       scrn->data = malloc(scrn->byte_pitch*scrn->height);
+      if (scrn->data) memset(scrn->data, 0, scrn->byte_pitch*scrn->height);
+    }
 }
 
 //
