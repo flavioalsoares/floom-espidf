@@ -34,6 +34,7 @@
 
 #include "config.h"
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include "m_argv.h"
 #include "doomstat.h"
@@ -52,10 +53,8 @@
 #include "st_stuff.h"
 #include "lprintf.h"
 
-#include "rom/ets_sys.h"
-#include "spi_lcd.h"
-
 #include "esp_heap_caps.h"
+#include "rgb_lcd.h"
 
 int use_fullscreen=0;
 int use_doublebuffer=0;
@@ -99,8 +98,6 @@ void I_StartFrame (void)
 
 int I_StartDisplay(void)
 {
-        //Flavio desativou
-	//spi_lcd_wait_finish();
   return true;
 }
 
@@ -112,45 +109,66 @@ void I_EndDisplay(void)
 
 static uint16_t *screena, *screenb;
 
+uint16_t lcdpal[256];
 
 //
 // I_FinishUpdate
 //
 
-void I_FinishUpdate (void)
-{
-	uint16_t *scr=(uint16_t*)screens[0].data;
-#if 0
-	int x, y;
-	char *chrs=" '.~+mM@";
-	ets_printf("\033[1;1H");
-	for (y=0; y<240; y+=4) {
-		for (x=0; x<320; x+=2) {
-			ets_printf("%c", chrs[(scr[x+y*320])>>13]);
-		}
-		ets_printf("\n");
-	}
-#endif
-#if 1
-        //Flavio desativou
-	//spi_lcd_send(scr);
-#endif
-	//Flip framebuffers
-//	if (scr==screena) screens[0].data=screenb; else screens[0].data=screena;
-}
+/*
+ * Blit Doom's 320x240 8bpp indexed framebuffer to the 800x480 RGB565
+ * display with 2x nearest-neighbour scaling, centred horizontally.
+ * Strategy: build each upscaled line in a fast SRAM buffer, then
+ * flush to PSRAM with two sequential memcpy calls — much faster than
+ * scattered per-pixel writes into PSRAM.
+ */
+#define DOOM_W   320
+#define DOOM_H   240
+#define LCD_W    800
+#define LCD_H    480
+#define X_OFF    ((LCD_W - DOOM_W * 2) / 2)   /* 80 */
 
-int16_t lcdpal[256];
+/*
+ * 640-pixel line buffer in DRAM (IRAM-safe, fast).
+ * Written as uint32_t pairs (2 pixels per store) to halve store count.
+ */
+static DRAM_ATTR uint32_t s_linebuf[DOOM_W];   /* 320 x uint32_t = 640 pixels */
+
+void IRAM_ATTR I_FinishUpdate(void)
+{
+	uint16_t *fb = rgb_lcd_get_frame_buffer();
+	if (!fb) return;
+
+	const uint8_t *src = (const uint8_t *)screens[0].data;
+	if (!src) return;
+
+	for (int y = 0; y < DOOM_H; y++) {
+		const uint8_t *srow = src + y * DOOM_W;
+
+		/* palette lookup + 2x horiz: one uint32_t write per source pixel */
+		for (int x = 0; x < DOOM_W; x++) {
+			uint32_t c = lcdpal[srow[x]];
+			s_linebuf[x] = (c << 16) | c;
+		}
+
+		/* two sequential memcpy to PSRAM (burst-friendly) */
+		uint16_t *row0 = fb + (y * 2 + 0) * LCD_W + X_OFF;
+		uint16_t *row1 = fb + (y * 2 + 1) * LCD_W + X_OFF;
+		memcpy(row0, s_linebuf, DOOM_W * 2 * sizeof(uint16_t));
+		memcpy(row1, s_linebuf, DOOM_W * 2 * sizeof(uint16_t));
+	}
+}
 
 void I_SetPalette (int pal)
 {
-	int i, r, g, b, v;
 	int pplump = W_GetNumForName("PLAYPAL");
-	const byte * palette = W_CacheLumpNum(pplump);
-	palette+=pal*(3*256);
-	for (i=0; i<255 ; i++) {
-		v=((palette[0]>>3)<<11)+((palette[1]>>2)<<5)+(palette[2]>>3);
-		lcdpal[i]=(v>>8)+(v<<8);
-//		lcdpal[i]=v;
+	const byte *palette = W_CacheLumpNum(pplump);
+	palette += pal * (3 * 256);
+	for (int i = 0; i < 256; i++) {
+		/* RGB565, native endian — no byte-swap (was needed for SPI only) */
+		lcdpal[i] = (uint16_t)(((palette[0] >> 3) << 11) |
+		                       ((palette[1] >> 2) <<  5) |
+		                        (palette[2] >> 3));
 		palette += 3;
 	}
 	W_UnlockLumpNum(pplump);
@@ -211,7 +229,16 @@ void I_SetRes(void)
   assert(screens[0].data);
 #endif
 
-//  spi_lcd_init();
+  rgb_lcd_init();
+
+  /* clear the 80-pixel black bars once; the blit never touches them */
+  uint16_t *fb = rgb_lcd_get_frame_buffer();
+  if (fb) {
+    for (int y = 0; y < 480; y++) {
+      memset(fb + y * 800,       0, 80 * sizeof(uint16_t));
+      memset(fb + y * 800 + 720, 0, 80 * sizeof(uint16_t));
+    }
+  }
 
   lprintf(LO_INFO,"I_SetRes: Using resolution %dx%d\n", SCREENWIDTH, SCREENHEIGHT);
 }

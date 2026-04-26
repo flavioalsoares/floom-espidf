@@ -353,7 +353,8 @@ int     setblocks;
 void R_SetViewSize(int blocks)
 {
   setsizeneeded = true;
-  setblocks = blocks;
+  /* clamp to 10: value 11 hides the status bar (fullscreen without HUD) */
+  setblocks = (blocks > 10) ? 10 : blocks;
 }
 
 //

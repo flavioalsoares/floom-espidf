@@ -95,7 +95,7 @@ boolean P_SetMobjState(mobj_t* mobj,statenum_t state)
     // Call action functions when the state is set
 
     if (st->action)
-      st->action(mobj);
+      ((void(*)(mobj_t *))st->action)(mobj);
 
     seenstate[state] = 1 + st->nextstate;   // killough 4/9/98
 
@@ -869,7 +869,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   mobj->PrevY = mobj->y;
   mobj->PrevZ = mobj->z;
 
-  mobj->thinker.function = P_MobjThinker;
+  mobj->thinker.function = (think_t)P_MobjThinker;
 
   //e6y
   mobj->friction    = ORIG_FRICTION;                        // phares 3/17/98

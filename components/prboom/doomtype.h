@@ -42,7 +42,7 @@
 #ifndef __BYTEBOOL__
 #define __BYTEBOOL__
 /* Fixed to use builtin bool type with C++. */
-#ifdef __cplusplus
+#if defined(__cplusplus) || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
 typedef bool boolean;
 #else
 #undef false

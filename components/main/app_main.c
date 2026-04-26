@@ -37,9 +37,7 @@
 //#include "spi_lcd.h"
 
 
-extern void jsInit();
 extern int doom_main(int argc, char const * const *argv);
-extern void spi_lcd_init() ;
 
 void doomEngineTask(void *pvParameters)
 {
@@ -51,5 +49,5 @@ void app_main()
 {
 	//spi_lcd_init();
 	//jsInit();
-	xTaskCreatePinnedToCore(&doomEngineTask, "doomEngine", 18000, NULL, 5, NULL, 0);
+	xTaskCreatePinnedToCore(&doomEngineTask, "doomEngine", 18000, NULL, 5, NULL, 1);
 }

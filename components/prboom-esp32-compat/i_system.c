@@ -71,10 +71,10 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "driver/i2s.h"
+
 
 #include "esp_partition.h"
-#include "esp_spi_flash.h"
+/* esp_spi_flash.h removed in ESP-IDF 6.0; spi_flash functions unused */
 
 #include <stdio.h>
 #include <string.h>
@@ -408,7 +408,7 @@ void freeUnusedMmaps(void) {
 			//spi_flash_munmap(mmapHandle[i].handle);
 			free(mmapHandle[i].addr);
 			mmapHandle[i].addr=NULL;
-			mmapHandle[i].ifd=NULL;
+			mmapHandle[i].ifd=0;
 			//printf("Freeing handle %d\n", i);
 		}
 	}

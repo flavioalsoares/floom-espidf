@@ -74,7 +74,7 @@ typedef enum
   NUMPSPRITES
 } psprnum_t;
 
-typedef struct
+typedef struct pspdef_s
 {
   state_t *state;       /* a NULL state means not active */
   int     tics;
@@ -92,28 +92,31 @@ void P_SetupPsprites(struct player_s *curplayer);
 void P_MovePsprites(struct player_s *curplayer);
 void P_DropWeapon(struct player_s *player);
 
-void A_Light0();
-void A_WeaponReady();
-void A_Lower();
-void A_Raise();
-void A_Punch();
-void A_ReFire();
-void A_FirePistol();
-void A_Light1();
-void A_FireShotgun();
-void A_Light2();
-void A_FireShotgun2();
-void A_CheckReload();
-void A_OpenShotgun2();
-void A_LoadShotgun2();
-void A_CloseShotgun2();
-void A_FireCGun();
-void A_GunFlash();
-void A_FireMissile();
-void A_Saw();
-void A_FirePlasma();
-void A_BFGsound();
-void A_FireBFG();
-void A_BFGSpray();
+struct player_s;
+struct mobj_s;
+
+void A_Light0(struct player_s *player, pspdef_t *psp);
+void A_WeaponReady(struct player_s *player, pspdef_t *psp);
+void A_Lower(struct player_s *player, pspdef_t *psp);
+void A_Raise(struct player_s *player, pspdef_t *psp);
+void A_Punch(struct player_s *player, pspdef_t *psp);
+void A_ReFire(struct player_s *player, pspdef_t *psp);
+void A_FirePistol(struct player_s *player, pspdef_t *psp);
+void A_Light1(struct player_s *player, pspdef_t *psp);
+void A_FireShotgun(struct player_s *player, pspdef_t *psp);
+void A_Light2(struct player_s *player, pspdef_t *psp);
+void A_FireShotgun2(struct player_s *player, pspdef_t *psp);
+void A_CheckReload(struct player_s *player, pspdef_t *psp);
+void A_OpenShotgun2(struct player_s *player, pspdef_t *psp);
+void A_LoadShotgun2(struct player_s *player, pspdef_t *psp);
+void A_CloseShotgun2(struct player_s *player, pspdef_t *psp);
+void A_FireCGun(struct player_s *player, pspdef_t *psp);
+void A_GunFlash(struct player_s *player, pspdef_t *psp);
+void A_FireMissile(struct player_s *player, pspdef_t *psp);
+void A_Saw(struct player_s *player, pspdef_t *psp);
+void A_FirePlasma(struct player_s *player, pspdef_t *psp);
+void A_BFGsound(struct player_s *player, pspdef_t *psp);
+void A_FireBFG(struct player_s *player, pspdef_t *psp);
+void A_BFGSpray(struct mobj_s *mo);
 
 #endif

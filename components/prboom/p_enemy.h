@@ -52,67 +52,73 @@ extern struct brain_s {         /* killough 3/26/98: global state of boss brain 
 // modified for years by Dehacked enthusiasts.  The new BEX format
 // allows more extensive changes (see d_deh.c)
 
-// Doesn't work with g++, needs actionf_p1
-void A_Explode();
-void A_Pain();
-void A_PlayerScream();
-void A_Fall();
-void A_XScream();
-void A_Look();
-void A_Chase();
-void A_FaceTarget();
-void A_PosAttack();
-void A_Scream();
-void A_SPosAttack();
-void A_VileChase();
-void A_VileStart();
-void A_VileTarget();
-void A_VileAttack();
-void A_StartFire();
-void A_Fire();
-void A_FireCrackle();
-void A_Tracer();
-void A_SkelWhoosh();
-void A_SkelFist();
-void A_SkelMissile();
-void A_FatRaise();
-void A_FatAttack1();
-void A_FatAttack2();
-void A_FatAttack3();
-void A_BossDeath();
-void A_CPosAttack();
-void A_CPosRefire();
-void A_TroopAttack();
-void A_SargAttack();
-void A_HeadAttack();
-void A_BruisAttack();
-void A_SkullAttack();
-void A_Metal();
-void A_SpidRefire();
-void A_BabyMetal();
-void A_BspiAttack();
-void A_Hoof();
-void A_CyberAttack();
-void A_PainAttack();
-void A_PainDie();
-void A_KeenDie();
-void A_BrainPain();
-void A_BrainScream();
-void A_BrainDie();
-void A_BrainAwake();
-void A_BrainSpit();
-void A_SpawnSound();
-void A_SpawnFly();
-void A_BrainExplode();
-void A_Die();
-void A_Detonate();        /* killough 8/9/98: detonate a bomb or other device */
-void A_Mushroom();        /* killough 10/98: mushroom effect */
-void A_Spawn();           // killough 11/98
-void A_Turn();            // killough 11/98
-void A_Face();            // killough 11/98
-void A_Scratch();         // killough 11/98
-void A_PlaySound();       // killough 11/98
-void A_RandomJump();      // killough 11/98
-void A_LineEffect();      // killough 11/98
+struct mobj_s;
+struct player_s;
+typedef struct pspdef_s pspdef_t;
+
+void A_Explode(struct mobj_s *actor);
+void A_Pain(struct mobj_s *actor);
+void A_PlayerScream(struct mobj_s *actor);
+void A_Fall(struct mobj_s *actor);
+void A_XScream(struct mobj_s *actor);
+void A_Look(struct mobj_s *actor);
+void A_Chase(struct mobj_s *actor);
+void A_FaceTarget(struct mobj_s *actor);
+void A_PosAttack(struct mobj_s *actor);
+void A_Scream(struct mobj_s *actor);
+void A_SPosAttack(struct mobj_s *actor);
+void A_VileChase(struct mobj_s *actor);
+void A_VileStart(struct mobj_s *actor);
+void A_VileTarget(struct mobj_s *actor);
+void A_VileAttack(struct mobj_s *actor);
+void A_StartFire(struct mobj_s *actor);
+void A_Fire(struct mobj_s *actor);
+void A_FireCrackle(struct mobj_s *actor);
+void A_Tracer(struct mobj_s *actor);
+void A_SkelWhoosh(struct mobj_s *actor);
+void A_SkelFist(struct mobj_s *actor);
+void A_SkelMissile(struct mobj_s *actor);
+void A_FatRaise(struct mobj_s *actor);
+void A_FatAttack1(struct mobj_s *actor);
+void A_FatAttack2(struct mobj_s *actor);
+void A_FatAttack3(struct mobj_s *actor);
+void A_BossDeath(struct mobj_s *actor);
+void A_CPosAttack(struct mobj_s *actor);
+void A_CPosRefire(struct mobj_s *actor);
+void A_TroopAttack(struct mobj_s *actor);
+void A_SargAttack(struct mobj_s *actor);
+void A_HeadAttack(struct mobj_s *actor);
+void A_BruisAttack(struct mobj_s *actor);
+void A_SkullAttack(struct mobj_s *actor);
+void A_Metal(struct mobj_s *actor);
+void A_SpidRefire(struct mobj_s *actor);
+void A_BabyMetal(struct mobj_s *actor);
+void A_BspiAttack(struct mobj_s *actor);
+void A_Hoof(struct mobj_s *actor);
+void A_CyberAttack(struct mobj_s *actor);
+void A_PainAttack(struct mobj_s *actor);
+void A_PainDie(struct mobj_s *actor);
+void A_KeenDie(struct mobj_s *actor);
+void A_BrainPain(struct mobj_s *actor);
+void A_BrainScream(struct mobj_s *actor);
+void A_BrainDie(struct mobj_s *actor);
+void A_BrainAwake(struct mobj_s *actor);
+void A_BrainSpit(struct mobj_s *actor);
+void A_SpawnSound(struct mobj_s *actor);
+void A_SpawnFly(struct mobj_s *actor);
+void A_BrainExplode(struct mobj_s *actor);
+void A_Die(struct mobj_s *actor);
+void A_Detonate(struct mobj_s *actor);
+void A_Mushroom(struct mobj_s *actor);
+void A_Spawn(struct mobj_s *actor);
+void A_Turn(struct mobj_s *actor);
+void A_Face(struct mobj_s *actor);
+void A_Scratch(struct mobj_s *actor);
+void A_PlaySound(struct mobj_s *actor);
+void A_RandomJump(struct mobj_s *actor);
+void A_LineEffect(struct mobj_s *actor);
+void A_OpenShotgun2(struct player_s *player, pspdef_t *psp);
+void A_LoadShotgun2(struct player_s *player, pspdef_t *psp);
+void A_CloseShotgun2(struct player_s *player, pspdef_t *psp);
 
 #endif // __P_ENEMY__

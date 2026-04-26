@@ -33,7 +33,7 @@
  */
 
 #include "freertos/FreeRTOS.h"
-#include "driver/i2s.h"
+/* driver/i2s.h removed in ESP-IDF 6.0; I2S audio output disabled */
 #include "freertos/queue.h"
 #include "freertos/task.h"
 
@@ -447,63 +447,21 @@ void IRAM_ATTR I_UpdateSound( void )
 
 void I_ShutdownSound(void)
 {
-  i2s_driver_uninstall(I2S_NUM_0); //stop & destroy i2s driver
+  /* I2S audio disabled (ESP-IDF 6.0 removed legacy driver) */
 }
 
-void IRAM_ATTR updateTask(void *arg) 
+void IRAM_ATTR updateTask(void *arg)
 {
-  size_t bytesWritten;
-  while(1)
-  {
-    //xSemaphoreTake(dmaChannel2Sem, portMAX_DELAY);
-    I_UpdateSound();
-    i2s_write(I2S_NUM_0, mixbuffer, SAMPLECOUNT*SAMPLESIZE, &bytesWritten, portMAX_DELAY);
-    //xSemaphoreGive(dmaChannel2Sem);
-  }
+  /* I2S audio output disabled */
+  while(1) { vTaskDelay(portMAX_DELAY); }
 }
 
 void I_InitSound(void)
 {
   mixbuffer = malloc(MIXBUFFERSIZE*sizeof(unsigned char));
 
-  static const i2s_config_t i2s_config = {
-    //.mode = I2S_MODE_MASTER | I2S_MODE_TX | /*I2S_MODE_PDM,*/ I2S_MODE_DAC_BUILT_IN,
-    .sample_rate = SAMPLERATE,
-    .bits_per_sample = SAMPLESIZE*8, /* the DAC module will only take the 8bits from MSB */
-    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-    .communication_format = I2S_COMM_FORMAT_I2S_MSB,
-    .intr_alloc_flags = 0, // default interrupt priority
-    .dma_buf_count = 4,
-    .dma_buf_len = 64,
-    .use_apll = false
-  };
-
-  i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);   //install and start i2s driver
-
-  i2s_set_pin(I2S_NUM_0, NULL); //for internal DAC, this will enable both of the internal channels
-
-  //i2s_set_dac_mode(I2S_DAC_CHANNEL_LEFT_EN);  
-/*    
-      Values:
-
-      I2S_DAC_CHANNEL_DISABLE = 0
-      Disable I2S built-in DAC signals
-
-      I2S_DAC_CHANNEL_RIGHT_EN = 1
-      Enable I2S built-in DAC right channel, maps to DAC channel 1 on GPIO25
-
-      I2S_DAC_CHANNEL_LEFT_EN = 2
-      Enable I2S built-in DAC left channel, maps to DAC channel 2 on GPIO26
-
-      I2S_DAC_CHANNEL_BOTH_EN = 0x3
-      Enable both of the I2S built-in DAC channels.
-
-      I2S_DAC_CHANNEL_MAX = 0x4
-      I2S built-in DAC mode max index    
-*/
-    
-  //i2s_set_sample_rates(I2S_NUM_0, SAMPLERATE); //set sample rates
-  audioStarted = true;
+  /* I2S audio output disabled (ESP-IDF 6.0 removed legacy I2S driver) */
+  audioStarted = false;
 
   // Initialize external data (all sounds) at start, keep static.
   lprintf( LO_INFO, "I_InitSound: ");
